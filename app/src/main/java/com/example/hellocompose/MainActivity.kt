@@ -82,7 +82,7 @@ fun ProfileContent() {
     showBackground = true
 )
 @Preview(
-    name = "Dark Mode",
+    name = "Dark Mode Preview",
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     showBackground = true
 )
