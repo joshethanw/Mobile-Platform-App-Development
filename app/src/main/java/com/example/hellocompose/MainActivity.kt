@@ -56,7 +56,7 @@ fun ProfileContent() {
     ) {
         Image(
             painter = painterResource(id = R.drawable.foto_profil),
-            contentDescription = "Foto profil",
+            contentDescription = "Foto profil Josh Ethan Widjaja",
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
