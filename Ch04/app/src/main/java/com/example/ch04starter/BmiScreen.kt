@@ -2,6 +2,7 @@ package com.example.ch04starter
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,13 +15,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -51,11 +59,14 @@ import com.example.ch04starter.ui.theme.Ch04StarterTheme
 // ============================================================================
 
 @Composable
-fun BmiScreen() {
+fun BmiScreen(snackbarHostState: SnackbarHostState? = null) {
     // rememberSaveable: bertahan saat rotasi layar
     var beratKg    by rememberSaveable { mutableFloatStateOf(60f) }
     var tinggiCm   by rememberSaveable { mutableFloatStateOf(165f) }
     var isDihitung by rememberSaveable { mutableStateOf(false) }
+    
+    // Key untuk mentrigger LaunchedEffect (Snackbar)
+    var snackbarTrigger by remember { mutableIntStateOf(0) }
 
     // derivedStateOf: hanya recompose saat nilai BMI benar-benar berubah
     val bmi by remember {
@@ -74,10 +85,15 @@ fun BmiScreen() {
         }
     }
 
-    // TODO 4: siapkan SnackbarHostState di sini (remember { SnackbarHostState() })
-    //         lalu tempatkan Scaffold(snackbarHost = { SnackbarHost(...) }) di
-    //         pemanggil, ATAU pindahkan BmiScreen jadi menerima SnackbarHostState
-    //         sebagai parameter (state hoisting!) dari MainScreen.
+    // TODO 4: Tampilkan Snackbar berisi kategori BMI selama 3 detik
+    LaunchedEffect(snackbarTrigger) {
+        if (snackbarTrigger > 0 && isDihitung) {
+            snackbarHostState?.showSnackbar(
+                message = "Kategori: $kategori",
+                withDismissAction = true
+            )
+        }
+    }
 
     Column(
         modifier            = Modifier
@@ -111,24 +127,23 @@ fun BmiScreen() {
             Button(
                 onClick  = {
                     isDihitung = true
-                    // TODO 4: trigger tampilan Snackbar di sini (lewat LaunchedEffect
-                    //         yang mengamati sebuah key, bukan langsung showSnackbar()
-                    //         di dalam onClick — kenapa? lihat lagi slide LaunchedEffect)
+                    snackbarTrigger++
                 },
                 modifier = Modifier.weight(1f)
             ) {
                 Text("Hitung BMI")
             }
 
-            // TODO 1b: ganti blok di bawah ini jadi tombol Reset sungguhan.
-            //          Reset harus mengembalikan beratKg -> 60f, tinggiCm -> 165f,
-            //          dan isDihitung -> false.
-            // Button(
-            //     onClick  = { /* TODO: reset ke nilai default */ },
-            //     modifier = Modifier.weight(1f)
-            // ) {
-            //     Text("Reset")
-            // }
+            OutlinedButton(
+                onClick  = {
+                    beratKg = 60f
+                    tinggiCm = 165f
+                    isDihitung = false
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Reset")
+            }
         }
 
         // AnimatedVisibility: fade-in saat isDihitung = true
@@ -164,10 +179,8 @@ fun BmiScreen() {
                     }
                 }
 
-                // TODO 1a: panggil composable tabel interpretasi BMI di sini,
-                //          misalnya InterpretasiBmiTable() — buat function-nya
-                //          sendiri di bawah, 4 baris (Kurus/Normal/Gemuk/Obesitas)
-                //          plus rentang nilainya masing-masing.
+                // Tabel interpretasi BMI
+                InterpretasiBmiTable()
             }
         }
     }
@@ -203,17 +216,73 @@ fun InputSlider(
     }
 }
 
-// TODO 1a: implementasikan composable ini.
-// @Composable
-// fun InterpretasiBmiTable() {
-//     // 4 baris: Kurus / Normal / Gemuk / Obesitas + rentang nilai masing-masing.
-//     // Boleh pakai Column + Row manual, atau lihat lagi cara render_table di
-//     // README chapter lain sebagai inspirasi tata letak (bukan kode Compose,
-//     // itu untuk generator slide — hanya untuk ide visual tabel).
-// }
+@Composable
+fun InterpretasiBmiTable() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors   = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
+    ) {
+        Column(
+            modifier            = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text       = "Tabel Interpretasi BMI",
+                style      = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+            val kategoriList = listOf(
+                Triple("Kurus", "< 18.5", Color(0xFF1565C0)),
+                Triple("Normal", "18.5 – 24.9", Color(0xFF2E7D32)),
+                Triple("Gemuk", "25.0 – 29.9", Color(0xFFE65100)),
+                Triple("Obesitas", "≥ 30.0", Color(0xFFC62828))
+            )
+
+            kategoriList.forEach { (kategori, rentang, warna) ->
+                Row(
+                    modifier              = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment     = Alignment.CenterVertically
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment     = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text       = "•",
+                            color      = warna,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text  = kategori,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    Text(
+                        text       = rentang,
+                        style      = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun BmiScreenPreview() {
-    Ch04StarterTheme { BmiScreen() }
+    Ch04StarterTheme { 
+        Scaffold(
+            snackbarHost = { SnackbarHost(remember { SnackbarHostState() }) }
+        ) { innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)) {
+                BmiScreen()
+            }
+        }
+    }
 }

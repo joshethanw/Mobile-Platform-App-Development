@@ -24,19 +24,19 @@ di README ini hanya ringkasannya.
 
 ### 1. `BmiScreen.kt` — lengkapi Kalkulator BMI
 
-- [ ] **1a.** Tabel interpretasi BMI di bawah kartu hasil (4 baris:
+- [x] **1a.** Tabel interpretasi BMI di bawah kartu hasil (4 baris:
       Kurus / Normal / Gemuk / Obesitas + rentang nilainya)
       → cari `TODO 1a` (ada dua: composable `InterpretasiBmiTable()` yang
       masih di-comment, dan titik pemanggilannya)
-- [ ] **1b.** Tombol **Reset** di sebelah tombol "Hitung BMI" yang
+- [x] **1b.** Tombol **Reset** di sebelah tombol "Hitung BMI" yang
       mengembalikan berat → 60 kg, tinggi → 165 cm, dan menyembunyikan
       hasil lagi → cari `TODO 1b`
 
 ### 2. `SuhuScreen.kt` — Kalkulator Konversi Suhu
 
-- [ ] **2a.** Parse input Celsius (`String`) jadi `Float` dengan aman
+- [x] **2a.** Parse input Celsius (`String`) jadi `Float` dengan aman
       (`toFloatOrNull()`) → cari `TODO 2a`
-- [ ] **2b.** Hitung `fahrenheit` (`C × 9/5 + 32`) dan `kelvin`
+- [x] **2b.** Hitung `fahrenheit` (`C × 9/5 + 32`) dan `kelvin`
       (`C + 273.15`) memakai `derivedStateOf`, mengikuti pola `bmi` di
       `BmiScreen.kt` → cari `TODO 2b`
 - [ ] *(Tantangan, opsional)* Buat ketiga field (Celsius/Fahrenheit/Kelvin)
@@ -45,17 +45,17 @@ di README ini hanya ringkasannya.
 
 ### 3. `RegistrasiScreen.kt` — Form Registrasi
 
-- [ ] **3a.** Validasi `nama` tidak boleh kosong
-- [ ] **3b.** Validasi `email` mengandung karakter `@`
-- [ ] **3c.** Validasi `password` minimal 8 karakter
-- [ ] **3d.** Validasi `konfirmasiPassword` sama persis dengan `password`
-- [ ] **3e.** Gabungkan 3a–3d jadi satu `derivedStateOf<Boolean>`
+- [x] **3a.** Validasi `nama` tidak boleh kosong
+- [x] **3b.** Validasi `email` mengandung karakter `@`
+- [x] **3c.** Validasi `password` minimal 8 karakter
+- [x] **3d.** Validasi `konfirmasiPassword` sama persis dengan `password`
+- [x] **3e.** Gabungkan 3a–3d jadi satu `derivedStateOf<Boolean>`
       bernama `isFormValid`, pasang ke parameter `enabled` tombol **Daftar**
       → cari `TODO 3e` untuk kerangka kodenya
 
 ### 4. Tantangan — Snackbar dengan `LaunchedEffect`
 
-- [ ] Saat tombol **Hitung BMI** ditekan, tampilkan `Snackbar` berisi
+- [x] Saat tombol **Hitung BMI** ditekan, tampilkan `Snackbar` berisi
       kategori BMI (mis. "Berat Badan Normal") selama 3 detik, memakai
       `LaunchedEffect` yang bereaksi terhadap perubahan kategori — **bukan**
       memanggil `showSnackbar()` langsung di dalam `onClick`

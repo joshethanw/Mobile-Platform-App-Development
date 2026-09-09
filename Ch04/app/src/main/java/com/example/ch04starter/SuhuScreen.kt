@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,14 +50,16 @@ import com.example.ch04starter.ui.theme.Ch04StarterTheme
 fun SuhuScreen() {
     var celsiusText by rememberSaveable { mutableStateOf("0") }
 
-    // TODO 2a: ganti 0f di bawah dengan hasil parse `celsiusText` yang aman
-    //          (mis. `celsiusText.toFloatOrNull() ?: 0f`)
-    val celsius = 0f
+    // TODO 2a: parse `celsiusText` yang aman
+    val celsius = remember(celsiusText) { celsiusText.toFloatOrNull() ?: 0f }
 
     // TODO 2b: bungkus kalkulasi F dan K dengan `remember { derivedStateOf { ... } }`
-    //          seperti pola `bmi` di BmiScreen.
-    val fahrenheit = 0f
-    val kelvin = 0f
+    val fahrenheit by remember {
+        derivedStateOf { (celsius * 9 / 5) + 32 }
+    }
+    val kelvin by remember {
+        derivedStateOf { celsius + 273.15f }
+    }
 
     Column(
         modifier            = Modifier
