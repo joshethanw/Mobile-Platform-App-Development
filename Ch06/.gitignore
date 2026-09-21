@@ -1,0 +1,7 @@
+.gradle
+.idea
+build
+app/build
+ch06_starter
+*.iml
+.DS_Store
